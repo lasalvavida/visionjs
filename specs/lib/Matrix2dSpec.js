@@ -278,19 +278,30 @@ describe('Matrix2d', function() {
       }).toThrowError();
     });
 
-    it('convolves a matrix using a kernel', function() {
+    it('convolves a matrix using a kernel', function(done) {
       var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
       var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
-      var result = matrix.convolve(kernel);
-      expect(result.get(0, 0)).toEqual(12);
-      expect(result.get(0, 1)).toEqual(18);
-      expect(result.get(0, 2)).toEqual(24);
-      expect(result.get(1, 0)).toEqual(30);
-      expect(result.get(1, 1)).toEqual(36);
-      expect(result.get(1, 2)).toEqual(42);
-      expect(result.get(2, 0)).toEqual(48);
-      expect(result.get(2, 1)).toEqual(54);
-      expect(result.get(2, 2)).toEqual(60);
+      var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
+      matrix.convolve(kernel)
+        .then(function(result) {
+          expect(result.equals(expected)).toBeTruthy();
+          done();
+        });
+    });
+
+    it('convolves a matrix using a kernel with chunking', function(done) {
+      var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+      var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
+      var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
+      matrix.convolve(kernel, {
+        chunk : {
+          iterations : 1,
+          duration : 4
+        }
+      }).then(function(result) {
+        expect(result.equals(expected)).toBeTruthy();
+        done();
+      });
     });
   });
 });
