@@ -289,13 +289,13 @@ describe('Matrix2d', function() {
         });
     });
 
-    it('convolves a matrix using a kernel with chunking', function(done) {
+    fit('convolves a matrix using a kernel with chunking', function(done) {
       var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
       var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
       var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
       matrix.convolve(kernel, {
         chunk : {
-          iterations : 1,
+          iterations : 2,
           duration : 4
         }
       }).then(function(result) {

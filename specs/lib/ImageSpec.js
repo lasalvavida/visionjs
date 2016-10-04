@@ -69,7 +69,7 @@ describe('Image', function() {
       var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
       image.convolve(kernel, {
         chunk : {
-          iterations : 1,
+          iterations : 2,
           duration : 4
         }
       }).then(function(result) {
