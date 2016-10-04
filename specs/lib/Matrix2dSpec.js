@@ -39,6 +39,12 @@ describe('Matrix2d', function() {
       }).toThrowError();
     });
 
+    it('throws an error if `array` isn\'t long enough', function() {
+      expect(function() {
+        var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2]);
+      }).toThrowError();
+    });
+
     it('creates a matrix from an array', function() {
       var matrix = Matrix2d.fromArray(2, 3, [0, 1, 2, 3, 4, 5]);
       expect(matrix.rows).toEqual(2);
@@ -63,6 +69,106 @@ describe('Matrix2d', function() {
     });
   });
 
+  describe('max', function() {
+    it('returns undefined if the matrix has size zero', function() {
+      var matrix = new Matrix2d(0, 0);
+      expect(matrix.max()).toEqual(undefined);
+    });
+
+    it('gets the highest value in the matrix', function() {
+      var matrix = Matrix2d.fromArray(2, 2, [0, 3, 2, 1]);
+      expect(matrix.max()).toEqual(3);
+    });
+  });
+
+  describe('min', function() {
+    it('returns undefined if the matrix has size zero', function() {
+      var matrix = new Matrix2d(0, 0);
+      expect(matrix.min()).toEqual(undefined);
+    });
+
+    it('gets the lowest value in the matrix', function() {
+      var matrix = Matrix2d.fromArray(2, 2, [1, 3, 2, 0]);
+      expect(matrix.min()).toEqual(0);
+    });
+  });
+
+  describe('fill', function() {
+    it('fills a matrix with a value', function() {
+      var matrix = new Matrix2d(2, 2);
+      matrix.fill(1);
+      for (var i = 0; i < matrix.length; i++) {
+        expect(matrix[i]).toBe(1);
+      }
+    });
+  });
+
+  describe('getIndex', function() {
+    it('throws an error if `row` is undefined', function() {
+      expect(function() {
+        var matrix = new Matrix2d(2, 2);
+        matrix.getIndex(undefined, 0);
+      }).toThrowError();
+    });
+
+    it('throws an error if `column` is undefined', function() {
+      expect(function() {
+        var matrix = new Matrix2d(2, 2);
+        matrix.getIndex(0, undefined);
+      }).toThrowError();
+    });
+
+    it('throws an error if `row` or `column` are out of bounds', function() {
+      var matrix = new Matrix2d(2, 2);
+      expect(function() {
+        matrix.getIndex(-1, 0);
+      }).toThrowError();
+      expect(function() {
+        matrix.getIndex(0, -1);
+      }).toThrowError();
+      expect(function() {
+        matrix.getIndex(2, 0);
+      }).toThrowError();
+      expect(function() {
+        matrix.getIndex(0, 2);
+      }).toThrowError();
+    });
+
+    it('gets a flat index into the array by row and column using extend mode', function() {
+      var matrix = new Matrix2d(2, 2);
+      var options = {edge : 'extend'};
+      expect(matrix.getIndex(-1, 0, options)).toEqual(0);
+      expect(matrix.getIndex(0, -1, options)).toEqual(0);
+      expect(matrix.getIndex(-1, -1, options)).toEqual(0);
+      expect(matrix.getIndex(-1, 1, options)).toEqual(1);
+      expect(matrix.getIndex(-1, 2, options)).toEqual(1);
+      expect(matrix.getIndex(0, 2, options)).toEqual(1);
+      expect(matrix.getIndex(1, -1, options)).toEqual(2);
+      expect(matrix.getIndex(2, -1, options)).toEqual(2);
+      expect(matrix.getIndex(2, 0, options)).toEqual(2);
+      expect(matrix.getIndex(1, 2, options)).toEqual(3);
+      expect(matrix.getIndex(2, 1, options)).toEqual(3);
+      expect(matrix.getIndex(2, 2, options)).toEqual(3);
+    });
+
+    it('gets a flat index into the array outside the matrix using wrap mode', function() {
+      var matrix = new Matrix2d(2, 2);
+      var options = {edge : 'wrap'};
+      expect(matrix.getIndex(-1, 0, options)).toEqual(2);
+      expect(matrix.getIndex(0, -1, options)).toEqual(1);
+      expect(matrix.getIndex(-1, -1, options)).toEqual(3);
+      expect(matrix.getIndex(-1, 1, options)).toEqual(3);
+      expect(matrix.getIndex(-1, 2, options)).toEqual(2);
+      expect(matrix.getIndex(0, 2, options)).toEqual(0);
+      expect(matrix.getIndex(1, -1, options)).toEqual(3);
+      expect(matrix.getIndex(2, -1, options)).toEqual(1);
+      expect(matrix.getIndex(2, 0, options)).toEqual(0);
+      expect(matrix.getIndex(1, 2, options)).toEqual(2);
+      expect(matrix.getIndex(2, 1, options)).toEqual(1);
+      expect(matrix.getIndex(2, 2, options)).toEqual(0);
+    });
+  });
+
   describe('get', function() {
     it('retrieves elements from a matrix by row/column', function() {
       var matrix = Matrix2d.fromArray(2, 3, [0, 1, 2, 3, 4, 5]);
@@ -76,34 +182,36 @@ describe('Matrix2d', function() {
 
     it('retrieves elements outside the matrix using extend mode', function() {
       var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
-      expect(matrix.get(-1, -1, {edge : 'extend'})).toEqual(0);
-      expect(matrix.get(-1, 0, {edge : 'extend'})).toEqual(0);
-      expect(matrix.get(-1, 1, {edge : 'extend'})).toEqual(1);
-      expect(matrix.get(-1, 2, {edge : 'extend'})).toEqual(1);
-      expect(matrix.get(0, -1, {edge : 'extend'})).toEqual(0);
-      expect(matrix.get(0, 2, {edge : 'extend'})).toEqual(1);
-      expect(matrix.get(1, -1, {edge : 'extend'})).toEqual(2);
-      expect(matrix.get(1, 2, {edge : 'extend'})).toEqual(3);
-      expect(matrix.get(2, -1, {edge : 'extend'})).toEqual(2);
-      expect(matrix.get(2, 0, {edge : 'extend'})).toEqual(2);
-      expect(matrix.get(2, 1, {edge : 'extend'})).toEqual(3);
-      expect(matrix.get(2, 2, {edge : 'extend'})).toEqual(3);
+      var options = {edge : 'extend'};
+      expect(matrix.get(-1, -1, options)).toEqual(0);
+      expect(matrix.get(-1, 0, options)).toEqual(0);
+      expect(matrix.get(-1, 1, options)).toEqual(1);
+      expect(matrix.get(-1, 2, options)).toEqual(1);
+      expect(matrix.get(0, -1, options)).toEqual(0);
+      expect(matrix.get(0, 2, options)).toEqual(1);
+      expect(matrix.get(1, -1, options)).toEqual(2);
+      expect(matrix.get(1, 2, options)).toEqual(3);
+      expect(matrix.get(2, -1, options)).toEqual(2);
+      expect(matrix.get(2, 0, options)).toEqual(2);
+      expect(matrix.get(2, 1, options)).toEqual(3);
+      expect(matrix.get(2, 2, options)).toEqual(3);
     });
 
-    it('retrieves elements outside the matrix using wrap', function() {
+    it('retrieves elements outside the matrix using wrap mode', function() {
       var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
-      expect(matrix.get(-1, -1, {edge : 'wrap'})).toEqual(3);
-      expect(matrix.get(-1, 0, {edge : 'wrap'})).toEqual(2);
-      expect(matrix.get(-1, 1, {edge : 'wrap'})).toEqual(3);
-      expect(matrix.get(-1, 2, {edge : 'wrap'})).toEqual(2);
-      expect(matrix.get(0, -1, {edge : 'wrap'})).toEqual(1);
-      expect(matrix.get(0, 2, {edge : 'wrap'})).toEqual(0);
-      expect(matrix.get(1, -1, {edge : 'wrap'})).toEqual(3);
-      expect(matrix.get(1, 2, {edge : 'wrap'})).toEqual(2);
-      expect(matrix.get(2, -1, {edge : 'wrap'})).toEqual(1);
-      expect(matrix.get(2, 0, {edge : 'wrap'})).toEqual(0);
-      expect(matrix.get(2, 1, {edge : 'wrap'})).toEqual(1);
-      expect(matrix.get(2, 2, {edge : 'wrap'})).toEqual(0);
+      var options = {edge : 'wrap'};
+      expect(matrix.get(-1, -1, options)).toEqual(3);
+      expect(matrix.get(-1, 0, options)).toEqual(2);
+      expect(matrix.get(-1, 1, options)).toEqual(3);
+      expect(matrix.get(-1, 2, options)).toEqual(2);
+      expect(matrix.get(0, -1, options)).toEqual(1);
+      expect(matrix.get(0, 2, options)).toEqual(0);
+      expect(matrix.get(1, -1, options)).toEqual(3);
+      expect(matrix.get(1, 2, options)).toEqual(2);
+      expect(matrix.get(2, -1, options)).toEqual(1);
+      expect(matrix.get(2, 0, options)).toEqual(0);
+      expect(matrix.get(2, 1, options)).toEqual(1);
+      expect(matrix.get(2, 2, options)).toEqual(0);
     });
   });
 
