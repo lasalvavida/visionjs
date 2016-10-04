@@ -4,6 +4,7 @@
   "description": "A library for powerful image processing on the web.",
   "main": "index.js",
   "scripts": {
+    "jshint" : "jshint **/*.js",
     "test": "jasmine JASMINE_CONFIG_PATH=specs/jasmine.json"
   },
   "repository": {
@@ -25,10 +26,14 @@
   },
   "homepage": "https://github.com/lasalvavida/visionjs#readme",
   "dependencies": {
-    "defaults": "1.0.3",
+    "defaults": "^1.0.3",
     "defined": "^1.0.0"
   },
   "devDependencies": {
-    "jasmine": "2.5.2"
+    "jasmine": "^2.5.2",
+    "jshint": "^2.9.3"
+  },
+  "jshintConfig" : {
+    "node" : true
   }
 }
