@@ -289,7 +289,7 @@ describe('Matrix2d', function() {
         });
     });
 
-    fit('convolves a matrix using a kernel with chunking', function(done) {
+    it('convolves a matrix using a kernel with chunking', function(done) {
       var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
       var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
       var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
@@ -302,6 +302,31 @@ describe('Matrix2d', function() {
         expect(result.equals(expected)).toBeTruthy();
         done();
       });
+    });
+  });
+
+  describe('transpose', function() {
+    it('throws an error if `result` dimensions don\'t match', function() {
+      var matrix = new Matrix2d(2, 2);
+      var result = new Matrix2d(2, 3);
+      expect(function() {
+        matrix.transpose(result);
+      }).toThrowError();
+    });
+
+    it('computes the transpose of a matrix', function() {
+      var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
+      var transpose = Matrix2d.fromArray(2, 2, [0, 2, 1, 3]);
+      matrix.transpose(matrix);
+      expect(matrix.equals(transpose)).toBeTruthy();
+    });
+
+    it('computes the tranpose of an asymmetric matrix', function() {
+      var matrix = Matrix2d.fromArray(2, 3, [0, 1, 2, 3, 4, 5]);
+      var result = new Matrix2d(3, 2);
+      var transpose = Matrix2d.fromArray(3, 2, [0, 3, 1, 4, 2, 5]);
+      matrix.transpose(result);
+      expect(result.equals(transpose)).toBeTruthy();
     });
   });
 });

@@ -36,6 +36,75 @@ describe('Kernel', function() {
     });
   });
 
+  describe('sobelX', function() {
+    it('produces a 3x3 sobel filter with a gradient in the x-direction', function() {
+      var sobelX = Kernel.sobelX(3, 3);
+      var compare = Matrix2d.fromArray(3, 3, [
+        1, 0, -1,
+        2, 0, -2,
+        1, 0, -1
+      ]);
+      expect(sobelX.equals(compare)).toBeTruthy();
+    });
+
+    it('produces a 5x5 sobel filter with a gradient in the x-direction', function() {
+      var sobelX = Kernel.sobelX(5, 5);
+      var compare = Matrix2d.fromArray(5, 5, [
+        2, 1, 0, -1, -2,
+        3, 2, 0, -2, -3,
+        4, 3, 0, -3, -4,
+        3, 2, 0, -2, -3,
+        2, 1, 0, -1, -2
+      ]);
+      expect(sobelX.equals(compare)).toBeTruthy();
+    });
+  });
+
+  describe('sobelY', function() {
+    it('produces a 3x3 sobel filter with a gradient in the y-direction', function() {
+      var sobelY = Kernel.sobelY(3, 3);
+      var compare = Matrix2d.fromArray(3, 3, [
+        1, 2, 1,
+        0, 0, 0,
+        -1, -2, -1
+      ]);
+      expect(sobelY.equals(compare)).toBeTruthy();
+    });
+
+    it('produces a 5x5 sobel filter with a gradient in the y-direction', function() {
+      var sobelY = Kernel.sobelY(5, 5);
+      var compare = Matrix2d.fromArray(5, 5, [
+        2, 3, 4, 3, 2,
+        1, 2, 3, 2, 1,
+        0, 0, 0, 0, 0,
+        -1, -2, -3, -2, -1,
+        -2, -3, -4, -3, -2
+      ]);
+      expect(sobelY.equals(compare)).toBeTruthy();
+    });
+  });
+
+  describe('combine', function() {
+    it('combines two kernels through convolution', function(done) {
+      var average = Kernel.average(3, 3);
+      average.scale(9, average);
+      average.apply(Math.round, average);
+      var secondPass = average.clone();
+      var expected = Matrix2d.fromArray(5, 5, [
+        1, 2, 3, 2, 1,
+        2, 4, 6, 4, 2,
+        3, 6, 9, 6, 3,
+        2, 4, 6, 4, 2,
+        1, 2, 3, 2, 1
+      ]);
+      Kernel.combine(average, secondPass)
+        .then(function(result) {
+          expect(result.equals(expected)).toBeTruthy();
+          done();
+        })
+    });
+  });
+
   describe('fromName', function() {
     it('calls kernel generation functions by name', function() {
       spyOn(Kernel, 'identity');
