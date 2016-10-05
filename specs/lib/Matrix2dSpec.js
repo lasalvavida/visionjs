@@ -1,4 +1,5 @@
 'use strict';
+var Kernel = require('../../lib/Kernel');
 var Matrix2d = require('../../lib/Matrix2d');
 
 describe('Matrix2d', function() {
