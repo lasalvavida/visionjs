@@ -84,6 +84,45 @@ describe('Kernel', function() {
     });
   });
 
+  describe('laplacian', function() {
+    it('produces a discrete 3x3 laplacian filter', function() {
+      var laplacian3x3 = Kernel.laplacian(3, 3);
+      var compare = Matrix2d.fromArray(3, 3, [
+        1, 1, 1,
+        1, -8, 1,
+        1, 1, 1
+      ]);
+      expect(laplacian3x3.equals(compare)).toBeTruthy();
+    });
+
+    it('produces a discrete 5x5 laplacian filter', function() {
+      var laplacian5x5 = Kernel.laplacian(5, 5);
+      var compare = Matrix2d.fromArray(5, 5, [
+        1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1,
+        1, 1, -24, 1, 1,
+        1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1
+      ]);
+      expect(laplacian5x5.equals(compare)).toBeTruthy();
+    });
+  });
+
+  describe('laplacianOfGaussian', function() {
+    it('produces a discrete 5x5 laplacian filter', function() {
+      var laplacianOfGaussian5x5 = Kernel.laplacianOfGaussian(5, 5);
+      laplacianOfGaussian5x5.apply(Math.round, laplacianOfGaussian5x5);
+      var compare = Matrix2d.fromArray(5, 5, [
+        0, -1, -1, -1, 0,
+        -1, -1, 2, -1, -1,
+        -1, 2, 10, 2, -1,
+        -1, -1, 2, -1, -1,
+        0, -1, -1, -1, 0
+      ]);
+      expect(laplacianOfGaussian5x5.equals(compare)).toBeTruthy();
+    });
+  });
+
   describe('combine', function() {
     it('combines two kernels through convolution', function(done) {
       var average = Kernel.average(3, 3);
