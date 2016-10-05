@@ -57,6 +57,26 @@ describe('Image', function() {
   });
 
   describe('convolve', function() {
+    it('convolves an RGBA image', function(done) {
+      var image = new Image(3, 3, {
+        colorspace : Colorspace.RGBA
+      });
+      var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+      image.channels[0] = matrix;
+      image.channels[1] = matrix.clone();
+      image.channels[2] = matrix.clone();
+      image.channels[3] = matrix.clone();
+      var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
+      var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
+      image.convolve(kernel).then(function(result) {
+        expect(result.channels[0].equals(expected)).toBeTruthy();
+        expect(result.channels[1].equals(expected)).toBeTruthy();
+        expect(result.channels[2].equals(expected)).toBeTruthy();
+        expect(result.channels[3].equals(matrix)).toBeTruthy();
+        done();
+      });
+    });
+
     it('convolves an image using a kernel with chunking', function(done) {
       var image = new Image(3, 3, {
         colorspace : Colorspace.RGB
