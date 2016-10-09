@@ -63,7 +63,7 @@ describe('Matrix2d', function() {
       expect(clone.rows).toEqual(matrix.rows);
       expect(clone.columns).toEqual(matrix.columns);
       expect(clone.length).toEqual(matrix.length);
-      expect(matrix.equals(clone)).toBe(true)();
+      expect(matrix.equals(clone)).toEqual(true);
 
       matrix[0] = 5;
       expect(clone[0]).not.toEqual(5);
@@ -99,7 +99,7 @@ describe('Matrix2d', function() {
       var matrix = new Matrix2d(2, 2);
       matrix.fill(1);
       for (var i = 0; i < matrix.length; i++) {
-        expect(matrix[i]).toBe(1);
+        expect(matrix[i]).toEqual(1);
       }
     });
   });
@@ -285,7 +285,7 @@ describe('Matrix2d', function() {
       var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
       matrix.convolve(kernel)
         .then(function(result) {
-          expect(result.equals(expected)).toBe(true)();
+          expect(result.equals(expected)).toEqual(true);
           done();
         });
     });
@@ -300,7 +300,7 @@ describe('Matrix2d', function() {
           duration : 4
         }
       }).then(function(result) {
-        expect(result.equals(expected)).toBe(true)();
+        expect(result.equals(expected)).toEqual(true);
         done();
       });
     });
@@ -319,7 +319,7 @@ describe('Matrix2d', function() {
       var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
       var expected = Matrix2d.fromArray(3, 3, [0, 1, 3, 3, 8, 15, 9, 21, 36]);
       matrix.integral(matrix);
-      expect(matrix.equals(expected)).toBe(true);
+      expect(matrix.equals(expected)).toEqual(true);
     });
   })
 
@@ -336,7 +336,7 @@ describe('Matrix2d', function() {
       var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
       var transpose = Matrix2d.fromArray(2, 2, [0, 2, 1, 3]);
       matrix.transpose(matrix);
-      expect(matrix.equals(transpose)).toBe(true);
+      expect(matrix.equals(transpose)).toEqual(true);
     });
 
     it('computes the tranpose of an asymmetric matrix', function() {
@@ -344,7 +344,7 @@ describe('Matrix2d', function() {
       var result = new Matrix2d(3, 2);
       var transpose = Matrix2d.fromArray(3, 2, [0, 3, 1, 4, 2, 5]);
       matrix.transpose(result);
-      expect(result.equals(transpose)).toBe(true)();
+      expect(result.equals(transpose)).toEqual(true);
     });
   });
 });
