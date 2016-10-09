@@ -7,11 +7,11 @@ describe('Kernel', function() {
     it('produces an identity kernel of the designated size', function() {
       var identity2x2 = Kernel.identity(2, 2);
       var compare = Matrix2d.fromArray(2, 2, [0, 0, 0, 1]);
-      expect(identity2x2.equals(compare)).toBeTruthy();
+      expect(identity2x2.equals(compare)).toBe(true)();
 
       var identity3x3 = Kernel.identity(3, 3);
       compare = Matrix2d.fromArray(3, 3, [0, 0, 0, 0, 1, 0, 0, 0, 0]);
-      expect(identity3x3.equals(compare)).toBeTruthy();
+      expect(identity3x3.equals(compare)).toBe(true)();
     });
   });
 
@@ -32,7 +32,7 @@ describe('Kernel', function() {
       gaussian3x3.scale(16, gaussian3x3);
       gaussian3x3.apply(Math.round, gaussian3x3);
       var compare = Matrix2d.fromArray(3, 3, [1, 2, 1, 2, 4, 2, 1, 2, 1]);
-      expect(gaussian3x3.equals(compare)).toBeTruthy();
+      expect(gaussian3x3.equals(compare)).toBe(true)();
     });
   });
 
@@ -44,7 +44,7 @@ describe('Kernel', function() {
         2, 0, -2,
         1, 0, -1
       ]);
-      expect(sobelX.equals(compare)).toBeTruthy();
+      expect(sobelX.equals(compare)).toBe(true)();
     });
 
     it('produces a 5x5 sobel filter with a gradient in the x-direction', function() {
@@ -56,7 +56,7 @@ describe('Kernel', function() {
         3, 2, 0, -2, -3,
         2, 1, 0, -1, -2
       ]);
-      expect(sobelX.equals(compare)).toBeTruthy();
+      expect(sobelX.equals(compare)).toBe(true)();
     });
   });
 
@@ -68,7 +68,7 @@ describe('Kernel', function() {
         0, 0, 0,
         -1, -2, -1
       ]);
-      expect(sobelY.equals(compare)).toBeTruthy();
+      expect(sobelY.equals(compare)).toBe(true)();
     });
 
     it('produces a 5x5 sobel filter with a gradient in the y-direction', function() {
@@ -80,7 +80,7 @@ describe('Kernel', function() {
         -1, -2, -3, -2, -1,
         -2, -3, -4, -3, -2
       ]);
-      expect(sobelY.equals(compare)).toBeTruthy();
+      expect(sobelY.equals(compare)).toBe(true)();
     });
   });
 
@@ -92,7 +92,7 @@ describe('Kernel', function() {
         1, -8, 1,
         1, 1, 1
       ]);
-      expect(laplacian3x3.equals(compare)).toBeTruthy();
+      expect(laplacian3x3.equals(compare)).toBe(true)();
     });
 
     it('produces a discrete 5x5 laplacian filter', function() {
@@ -104,7 +104,7 @@ describe('Kernel', function() {
         1, 1, 1, 1, 1,
         1, 1, 1, 1, 1
       ]);
-      expect(laplacian5x5.equals(compare)).toBeTruthy();
+      expect(laplacian5x5.equals(compare)).toBe(true)();
     });
   });
 
@@ -119,7 +119,7 @@ describe('Kernel', function() {
         -1, -1, 2, -1, -1,
         0, -1, -1, -1, 0
       ]);
-      expect(laplacianOfGaussian5x5.equals(compare)).toBeTruthy();
+      expect(laplacianOfGaussian5x5.equals(compare)).toBe(true)();
     });
   });
 
@@ -138,7 +138,7 @@ describe('Kernel', function() {
       ]);
       Kernel.combine(average, secondPass)
         .then(function(result) {
-          expect(result.equals(expected)).toBeTruthy();
+          expect(result.equals(expected)).toBe(true)();
           done();
         })
     });

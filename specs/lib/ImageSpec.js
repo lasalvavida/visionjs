@@ -20,19 +20,19 @@ describe('Image', function() {
 
       var red = image.channels[0];
       var compareRed = Matrix2d.fromArray(1, 4, [0, 255, 0, 0]);
-      expect(red.equals(compareRed)).toBeTruthy();
+      expect(red.equals(compareRed)).toBe(true)();
 
       var green = image.channels[1];
       var compareGreen = Matrix2d.fromArray(1, 4, [0, 0, 255, 0]);
-      expect(green.equals(compareGreen)).toBeTruthy();
+      expect(green.equals(compareGreen)).toBe(true)();
 
       var blue = image.channels[2];
       var compareBlue = Matrix2d.fromArray(1, 4, [0, 0, 0, 255]);
-      expect(blue.equals(compareBlue)).toBeTruthy();
+      expect(blue.equals(compareBlue)).toBe(true)();
 
       var alpha = image.channels[3];
       var compareAlpha = Matrix2d.fromArray(1, 4, [255, 255, 255, 255]);
-      expect(alpha.equals(compareAlpha)).toBeTruthy();
+      expect(alpha.equals(compareAlpha)).toBe(true)();
     });
   });
 
@@ -56,6 +56,25 @@ describe('Image', function() {
     });
   });
 
+  describe('apply', function() {
+    it('computes the integral image using apply', function() {
+      var image = new Image(3, 3, {
+        colorspace : Colorspace.RGBA
+      });
+      var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+      image.channels[0] = matrix;
+      image.channels[1] = matrix.clone();
+      image.channels[2] = matrix.clone();
+      image.channels[3] = matrix.clone();
+      var expected = Matrix2d.fromArray(3, 3, [0, 1, 3, 3, 8, 15, 9, 21, 36]);
+      image.apply('integral', image);
+      expect(result.channels[0].equals(expected)).toBe(true);
+      expect(result.channels[1].equals(expected)).toBe(true);
+      expect(result.channels[2].equals(expected)).toBe(true);
+      expect(result.channels[3].equals(matrix)).toBe(true);
+    });
+  });
+
   describe('convolve', function() {
     it('convolves an RGBA image', function(done) {
       var image = new Image(3, 3, {
@@ -69,10 +88,10 @@ describe('Image', function() {
       var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
       var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
       image.convolve(kernel).then(function(result) {
-        expect(result.channels[0].equals(expected)).toBeTruthy();
-        expect(result.channels[1].equals(expected)).toBeTruthy();
-        expect(result.channels[2].equals(expected)).toBeTruthy();
-        expect(result.channels[3].equals(matrix)).toBeTruthy();
+        expect(result.channels[0].equals(expected)).toBe(true)();
+        expect(result.channels[1].equals(expected)).toBe(true)();
+        expect(result.channels[2].equals(expected)).toBe(true)();
+        expect(result.channels[3].equals(matrix)).toBe(true)();
         done();
       });
     });
@@ -93,9 +112,9 @@ describe('Image', function() {
           duration : 4
         }
       }).then(function(result) {
-        expect(result.channels[0].equals(expected)).toBeTruthy();
-        expect(result.channels[1].equals(expected)).toBeTruthy();
-        expect(result.channels[2].equals(expected)).toBeTruthy();
+        expect(result.channels[0].equals(expected)).toBe(true)();
+        expect(result.channels[1].equals(expected)).toBe(true)();
+        expect(result.channels[2].equals(expected)).toBe(true)();
         done();
       });
     });
