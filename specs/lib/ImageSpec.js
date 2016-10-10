@@ -19,19 +19,19 @@ describe('Image', function() {
       expect(image.length).toEqual(4);
 
       var red = image.channels[0];
-      var compareRed = Matrix2d.fromArray(1, 4, [0, 255, 0, 0]);
+      var compareRed = new Matrix2d(1, 4, [0, 255, 0, 0]);
       expect(red).toEqual(compareRed);
 
       var green = image.channels[1];
-      var compareGreen = Matrix2d.fromArray(1, 4, [0, 0, 255, 0]);
+      var compareGreen = new Matrix2d(1, 4, [0, 0, 255, 0]);
       expect(green).toEqual(compareGreen);
 
       var blue = image.channels[2];
-      var compareBlue = Matrix2d.fromArray(1, 4, [0, 0, 0, 255]);
+      var compareBlue = new Matrix2d(1, 4, [0, 0, 0, 255]);
       expect(blue).toEqual(compareBlue);
 
       var alpha = image.channels[3];
-      var compareAlpha = Matrix2d.fromArray(1, 4, [255, 255, 255, 255]);
+      var compareAlpha = new Matrix2d(1, 4, [255, 255, 255, 255]);
       expect(alpha).toEqual(compareAlpha);
     });
   });
@@ -61,12 +61,12 @@ describe('Image', function() {
       var image = new Image(3, 3, {
         colorspace : Colorspace.RGBA
       });
-      var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+      var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
       image.channels[0] = matrix;
       image.channels[1] = matrix.clone();
       image.channels[2] = matrix.clone();
       image.channels[3] = matrix.clone();
-      var expected = Matrix2d.fromArray(3, 3, [0, 1, 3, 3, 8, 15, 9, 21, 36]);
+      var expected = new Matrix2d(3, 3, [0, 1, 3, 3, 8, 15, 9, 21, 36]);
       var result = image.apply('integral');
       expect(result.channels[0]).toEqual(expected);
       expect(result.channels[1]).toEqual(expected);
@@ -76,37 +76,36 @@ describe('Image', function() {
   });
 
   describe('convolve', function() {
-    it('convolves an RGBA image', function(done) {
+    it('convolves an RGBA image', function() {
       var image = new Image(3, 3, {
         colorspace : Colorspace.RGBA
       });
-      var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+      var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
       image.channels[0] = matrix;
       image.channels[1] = matrix.clone();
       image.channels[2] = matrix.clone();
       image.channels[3] = matrix.clone();
-      var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
-      var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
-      image.convolve(kernel).then(function(result) {
-        expect(result.channels[0]).toEqual(expected);
-        expect(result.channels[1]).toEqual(expected);
-        expect(result.channels[2]).toEqual(expected);
-        expect(result.channels[3]).toEqual(matrix);
-        done();
-      });
+      var kernel = new Matrix2d(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
+      var expected = new Matrix2d(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
+      var result = image.convolve(kernel);
+      expect(result.channels[0]).toEqual(expected);
+      expect(result.channels[1]).toEqual(expected);
+      expect(result.channels[2]).toEqual(expected);
+      expect(result.channels[3]).toEqual(matrix);
     });
-
+  });
+  describe('convolveAsync', function() {
     it('convolves an image using a kernel with chunking', function(done) {
       var image = new Image(3, 3, {
         colorspace : Colorspace.RGB
       });
-      var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+      var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
       image.channels[0] = matrix;
       image.channels[1] = matrix.clone();
       image.channels[2] = matrix.clone();
-      var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
-      var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
-      image.convolve(kernel, {
+      var kernel = new Matrix2d(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
+      var expected = new Matrix2d(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
+      image.convolveAsync(kernel, {
         chunk : {
           iterations : 2,
           duration : 4
