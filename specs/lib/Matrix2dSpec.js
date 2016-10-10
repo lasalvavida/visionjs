@@ -25,29 +25,9 @@ describe('Matrix2d', function() {
         expect(matrix[i]).toEqual(0);
       }
     });
-  });
-
-  describe('fromArray', function() {
-    it('throws an error if `rows` is undefined', function() {
-      expect(function() {
-        var matrix = Matrix2d.fromArray(undefined, 2, [0, 1, 2, 3]);
-      }).toThrowError();
-    });
-
-    it('throws an error if `columns` is undefined', function() {
-      expect(function() {
-        var matrix = Matrix2d.fromArray(2, undefined, [0, 1, 2, 3]);
-      }).toThrowError();
-    });
-
-    it('throws an error if `array` isn\'t long enough', function() {
-      expect(function() {
-        var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2]);
-      }).toThrowError();
-    });
 
     it('creates a matrix from an array', function() {
-      var matrix = Matrix2d.fromArray(2, 3, [0, 1, 2, 3, 4, 5]);
+      var matrix = new Matrix2d(2, 3, [0, 1, 2, 3, 4, 5]);
       expect(matrix.rows).toEqual(2);
       expect(matrix.columns).toEqual(3);
       for (var i = 0; i < matrix.length; i++) {
@@ -58,12 +38,12 @@ describe('Matrix2d', function() {
 
   describe('clone', function() {
     it('produces a copy of the matrix in new memory', function() {
-      var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
+      var matrix = new Matrix2d(2, 2, [0, 1, 2, 3]);
       var clone = matrix.clone();
       expect(clone.rows).toEqual(matrix.rows);
       expect(clone.columns).toEqual(matrix.columns);
       expect(clone.length).toEqual(matrix.length);
-      expect(matrix.equals(clone)).toEqual(true);
+      expect(matrix.equals(clone)).toBeTruthy();
 
       matrix[0] = 5;
       expect(clone[0]).not.toEqual(5);
@@ -77,7 +57,7 @@ describe('Matrix2d', function() {
     });
 
     it('gets the highest value in the matrix', function() {
-      var matrix = Matrix2d.fromArray(2, 2, [0, 3, 2, 1]);
+      var matrix = new Matrix2d(2, 2, [0, 3, 2, 1]);
       expect(matrix.max()).toEqual(3);
     });
   });
@@ -89,7 +69,7 @@ describe('Matrix2d', function() {
     });
 
     it('gets the lowest value in the matrix', function() {
-      var matrix = Matrix2d.fromArray(2, 2, [1, 3, 2, 0]);
+      var matrix = new Matrix2d(2, 2, [1, 3, 2, 0]);
       expect(matrix.min()).toEqual(0);
     });
   });
@@ -99,7 +79,7 @@ describe('Matrix2d', function() {
       var matrix = new Matrix2d(2, 2);
       matrix.fill(1);
       for (var i = 0; i < matrix.length; i++) {
-        expect(matrix[i]).toEqual(1);
+        expect(matrix[i]).toBe(1);
       }
     });
   });
@@ -172,7 +152,7 @@ describe('Matrix2d', function() {
 
   describe('get', function() {
     it('retrieves elements from a matrix by row/column', function() {
-      var matrix = Matrix2d.fromArray(2, 3, [0, 1, 2, 3, 4, 5]);
+      var matrix = new Matrix2d(2, 3, [0, 1, 2, 3, 4, 5]);
       expect(matrix.get(0, 0)).toEqual(0);
       expect(matrix.get(0, 1)).toEqual(1);
       expect(matrix.get(0, 2)).toEqual(2);
@@ -182,7 +162,7 @@ describe('Matrix2d', function() {
     });
 
     it('retrieves elements outside the matrix using extend mode', function() {
-      var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
+      var matrix = new Matrix2d(2, 2, [0, 1, 2, 3]);
       var options = {edge : 'extend'};
       expect(matrix.get(-1, -1, options)).toEqual(0);
       expect(matrix.get(-1, 0, options)).toEqual(0);
@@ -199,7 +179,7 @@ describe('Matrix2d', function() {
     });
 
     it('retrieves elements outside the matrix using wrap mode', function() {
-      var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
+      var matrix = new Matrix2d(2, 2, [0, 1, 2, 3]);
       var options = {edge : 'wrap'};
       expect(matrix.get(-1, -1, options)).toEqual(3);
       expect(matrix.get(-1, 0, options)).toEqual(2);
@@ -218,7 +198,7 @@ describe('Matrix2d', function() {
 
   describe('set', function() {
     it('sets an element in a matrix by row/column and returns the old value', function() {
-      var matrix = Matrix2d.fromArray(2, 3, [0, 1, 2, 3, 4, 5]);
+      var matrix = new Matrix2d(2, 3, [0, 1, 2, 3, 4, 5]);
       var old = matrix.set(0, 2, 10);
       expect(old).toEqual(2);
       expect(matrix.get(0, 2)).toEqual(10);
@@ -250,7 +230,7 @@ describe('Matrix2d', function() {
     });
 
     it('computes the sum of two matrices', function() {
-      var matrixOne = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
+      var matrixOne = new Matrix2d(2, 2, [0, 1, 2, 3]);
       var matrixTwo = matrixOne.clone();
       var matrixSum = matrixOne.add(matrixTwo);
       expect(matrixSum.rows).toEqual(matrixOne.rows);
@@ -262,7 +242,7 @@ describe('Matrix2d', function() {
     });
 
     it('computes the sum of two matrices in place', function() {
-      var matrixOne = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
+      var matrixOne = new Matrix2d(2, 2, [0, 1, 2, 3]);
       var matrixTwo = matrixOne.clone();
       matrixOne.add(matrixTwo, matrixOne);
       for (var i = 0; i < matrixOne.length; i++) {
@@ -280,27 +260,27 @@ describe('Matrix2d', function() {
     });
 
     it('convolves a matrix using a kernel', function(done) {
-      var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
-      var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
-      var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
+      var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+      var kernel = new Matrix2d(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
+      var expected = new Matrix2d(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
       matrix.convolve(kernel)
         .then(function(result) {
-          expect(result.equals(expected)).toEqual(true);
+          expect(result.equals(expected)).toBeTruthy();
           done();
         });
     });
 
     it('convolves a matrix using a kernel with chunking', function(done) {
-      var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
-      var kernel = Matrix2d.fromArray(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
-      var expected = Matrix2d.fromArray(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
+      var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+      var kernel = new Matrix2d(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
+      var expected = new Matrix2d(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
       matrix.convolve(kernel, {
         chunk : {
           iterations : 2,
           duration : 4
         }
       }).then(function(result) {
-        expect(result.equals(expected)).toEqual(true);
+        expect(result.equals(expected)).toBeTruthy();
         done();
       });
     });
@@ -316,10 +296,10 @@ describe('Matrix2d', function() {
     });
 
     it('computes the integral of a matrix', function() {
-      var matrix = Matrix2d.fromArray(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
-      var expected = Matrix2d.fromArray(3, 3, [0, 1, 3, 3, 8, 15, 9, 21, 36]);
+      var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+      var expected = Matrix2d.fromArrray(3, 3, [0, 1, 3, 3, 8, 15, 9, 21, 36]);
       matrix.integral(matrix);
-      expect(matrix.equals(expected)).toEqual(true);
+      expect(matrix.equals(expected)).toBe(true);
     });
   })
 
@@ -333,18 +313,18 @@ describe('Matrix2d', function() {
     });
 
     it('computes the transpose of a matrix', function() {
-      var matrix = Matrix2d.fromArray(2, 2, [0, 1, 2, 3]);
-      var transpose = Matrix2d.fromArray(2, 2, [0, 2, 1, 3]);
+      var matrix = new Matrix2d(2, 2, [0, 1, 2, 3]);
+      var transpose = new Matrix2d(2, 2, [0, 2, 1, 3]);
       matrix.transpose(matrix);
-      expect(matrix.equals(transpose)).toEqual(true);
+      expect(matrix.equals(transpose)).toBe(true);
     });
 
     it('computes the tranpose of an asymmetric matrix', function() {
-      var matrix = Matrix2d.fromArray(2, 3, [0, 1, 2, 3, 4, 5]);
+      var matrix = new Matrix2d(2, 3, [0, 1, 2, 3, 4, 5]);
       var result = new Matrix2d(3, 2);
-      var transpose = Matrix2d.fromArray(3, 2, [0, 3, 1, 4, 2, 5]);
+      var transpose = new Matrix2d(3, 2, [0, 3, 1, 4, 2, 5]);
       matrix.transpose(result);
-      expect(result.equals(transpose)).toEqual(true);
+      expect(result.equals(transpose)).toBeTruthy();
     });
   });
 });
