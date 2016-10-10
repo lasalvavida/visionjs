@@ -6,11 +6,11 @@ describe('Kernel', function() {
   describe('identity', function() {
     it('produces an identity kernel of the designated size', function() {
       var identity2x2 = Kernel.identity(2, 2);
-      var compare = Matrix2d.fromArray(2, 2, [0, 0, 0, 1]);
+      var compare = new Matrix2d(2, 2, [0, 0, 0, 1]);
       expect(identity2x2.equals(compare)).toEqual(true);
 
       var identity3x3 = Kernel.identity(3, 3);
-      compare = Matrix2d.fromArray(3, 3, [0, 0, 0, 0, 1, 0, 0, 0, 0]);
+      compare = new Matrix2d(3, 3, [0, 0, 0, 0, 1, 0, 0, 0, 0]);
       expect(identity3x3.equals(compare)).toEqual(true);
     });
   });
@@ -19,7 +19,9 @@ describe('Kernel', function() {
     it('produces a scaled kernel of all ones', function() {
       var average2x3 = Kernel.average(2, 3);
       average2x3.scale(6, average2x3);
-      average2x3.apply(Math.round, average2x3);
+      average2x3.apply(function(row, column) {
+        this.set(row, column, Math.round(this.get(row, column)));
+      });
       for (var i = 0; i < average2x3.length; i++) {
         expect(average2x3[i]).toEqual(1);
       }
@@ -30,8 +32,10 @@ describe('Kernel', function() {
     it('produces the discrete gaussian 3x3 by default', function() {
       var gaussian3x3 = Kernel.gaussian(3, 3);
       gaussian3x3.scale(16, gaussian3x3);
-      gaussian3x3.apply(Math.round, gaussian3x3);
-      var compare = Matrix2d.fromArray(3, 3, [1, 2, 1, 2, 4, 2, 1, 2, 1]);
+      gaussian3x3.apply(function(row, column) {
+        this.set(row, column, Math.round(this.get(row, column)));
+      });
+      var compare = new Matrix2d(3, 3, [1, 2, 1, 2, 4, 2, 1, 2, 1]);
       expect(gaussian3x3.equals(compare)).toEqual(true);
     });
   });
@@ -39,7 +43,7 @@ describe('Kernel', function() {
   describe('sobelX', function() {
     it('produces a 3x3 sobel filter with a gradient in the x-direction', function() {
       var sobelX = Kernel.sobelX(3, 3);
-      var compare = Matrix2d.fromArray(3, 3, [
+      var compare = new Matrix2d(3, 3, [
         1, 0, -1,
         2, 0, -2,
         1, 0, -1
@@ -49,7 +53,7 @@ describe('Kernel', function() {
 
     it('produces a 5x5 sobel filter with a gradient in the x-direction', function() {
       var sobelX = Kernel.sobelX(5, 5);
-      var compare = Matrix2d.fromArray(5, 5, [
+      var compare = new Matrix2d(5, 5, [
         2, 1, 0, -1, -2,
         3, 2, 0, -2, -3,
         4, 3, 0, -3, -4,
@@ -63,7 +67,7 @@ describe('Kernel', function() {
   describe('sobelY', function() {
     it('produces a 3x3 sobel filter with a gradient in the y-direction', function() {
       var sobelY = Kernel.sobelY(3, 3);
-      var compare = Matrix2d.fromArray(3, 3, [
+      var compare = new Matrix2d(3, 3, [
         1, 2, 1,
         0, 0, 0,
         -1, -2, -1
@@ -73,7 +77,7 @@ describe('Kernel', function() {
 
     it('produces a 5x5 sobel filter with a gradient in the y-direction', function() {
       var sobelY = Kernel.sobelY(5, 5);
-      var compare = Matrix2d.fromArray(5, 5, [
+      var compare = new Matrix2d(5, 5, [
         2, 3, 4, 3, 2,
         1, 2, 3, 2, 1,
         0, 0, 0, 0, 0,
@@ -87,7 +91,7 @@ describe('Kernel', function() {
   describe('laplacian', function() {
     it('produces a discrete 3x3 laplacian filter', function() {
       var laplacian3x3 = Kernel.laplacian(3, 3);
-      var compare = Matrix2d.fromArray(3, 3, [
+      var compare = new Matrix2d(3, 3, [
         1, 1, 1,
         1, -8, 1,
         1, 1, 1
@@ -97,7 +101,7 @@ describe('Kernel', function() {
 
     it('produces a discrete 5x5 laplacian filter', function() {
       var laplacian5x5 = Kernel.laplacian(5, 5);
-      var compare = Matrix2d.fromArray(5, 5, [
+      var compare = new Matrix2d(5, 5, [
         1, 1, 1, 1, 1,
         1, 1, 1, 1, 1,
         1, 1, -24, 1, 1,
@@ -111,8 +115,10 @@ describe('Kernel', function() {
   describe('laplacianOfGaussian', function() {
     it('produces a discrete 5x5 laplacian filter', function() {
       var laplacianOfGaussian5x5 = Kernel.laplacianOfGaussian(5, 5);
-      laplacianOfGaussian5x5.apply(Math.round, laplacianOfGaussian5x5);
-      var compare = Matrix2d.fromArray(5, 5, [
+      laplacianOfGaussian5x5.apply(function(row, column) {
+        this.set(row, column, Math.round(this.get(row, column)));
+      });
+      var compare = new Matrix2d(5, 5, [
         0, -1, -1, -1, 0,
         -1, -1, 2, -1, -1,
         -1, 2, 10, 2, -1,
@@ -124,23 +130,21 @@ describe('Kernel', function() {
   });
 
   describe('combine', function() {
-    it('combines two kernels through convolution', function(done) {
+    it('combines two kernels through convolution', function() {
       var average = Kernel.average(3, 3);
       average.scale(9, average);
-      average.apply(Math.round, average);
+      average.apply(function(row, column) {
+        this.set(row, column, Math.round(this.get(row, column)));
+      });
       var secondPass = average.clone();
-      var expected = Matrix2d.fromArray(5, 5, [
+      var expected = new Matrix2d(5, 5, [
         1, 2, 3, 2, 1,
         2, 4, 6, 4, 2,
         3, 6, 9, 6, 3,
         2, 4, 6, 4, 2,
         1, 2, 3, 2, 1
       ]);
-      Kernel.combine(average, secondPass)
-        .then(function(result) {
-          expect(result.equals(expected)).toEqual(true);
-          done();
-        })
+      Kernel.combine(average, secondPass);
     });
   });
 

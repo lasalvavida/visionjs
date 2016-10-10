@@ -50,30 +50,6 @@ describe('Matrix2d', function() {
     });
   });
 
-  describe('max', function() {
-    it('returns undefined if the matrix has size zero', function() {
-      var matrix = new Matrix2d(0, 0);
-      expect(matrix.max()).toEqual(undefined);
-    });
-
-    it('gets the highest value in the matrix', function() {
-      var matrix = new Matrix2d(2, 2, [0, 3, 2, 1]);
-      expect(matrix.max()).toEqual(3);
-    });
-  });
-
-  describe('min', function() {
-    it('returns undefined if the matrix has size zero', function() {
-      var matrix = new Matrix2d(0, 0);
-      expect(matrix.min()).toEqual(undefined);
-    });
-
-    it('gets the lowest value in the matrix', function() {
-      var matrix = new Matrix2d(2, 2, [1, 3, 2, 0]);
-      expect(matrix.min()).toEqual(0);
-    });
-  });
-
   describe('fill', function() {
     it('fills a matrix with a value', function() {
       var matrix = new Matrix2d(2, 2);
@@ -205,6 +181,90 @@ describe('Matrix2d', function() {
     });
   });
 
+  describe('max', function() {
+    it('returns undefined if the matrix has size zero', function() {
+      var matrix = new Matrix2d(0, 0);
+      expect(matrix.max()).toEqual(undefined);
+    });
+
+    it('gets the highest value in the matrix', function() {
+      var matrix = new Matrix2d(2, 2, [0, 3, 2, 1]);
+      expect(matrix.max()).toEqual(3);
+    });
+  });
+
+  describe('min', function() {
+    it('returns undefined if the matrix has size zero', function() {
+      var matrix = new Matrix2d(0, 0);
+      expect(matrix.min()).toEqual(undefined);
+    });
+
+    it('gets the lowest value in the matrix', function() {
+      var matrix = new Matrix2d(2, 2, [1, 3, 2, 0]);
+      expect(matrix.min()).toEqual(0);
+    });
+  });
+
+  describe('apply', function() {
+    it('performs an operation at each cell of a matrix', function() {
+      var m1 = new Matrix2d(2, 2, [0, 1, 2, 3]);
+      var m2 = new Matrix2d(2, 2, [4, 5, 6, 7]);
+      var expected = new Matrix2d(2, 2, [4, 6, 8, 10]);
+      var m3 = new Matrix2d(2, 2);
+      var args = [m2, m3];
+
+      m1.apply(function(row, column, matrix, result) {
+        result.set(row, column, this.get(row, column) + matrix.get(row, column));
+      }, args);
+
+      expect(args.length).toEqual(2);
+      expect(m3).toEqual(expected);
+    });
+  });
+
+  describe('applyAsync', function() {
+    it('performs an operation at each cell of a matrix', function(done) {
+      var m1 = new Matrix2d(2, 2, [0, 1, 2, 3]);
+      var m2 = new Matrix2d(2, 2, [4, 5, 6, 7]);
+      var expected = new Matrix2d(2, 2, [4, 6, 8, 10]);
+      var m3 = new Matrix2d(2, 2);
+      var args = [m2, m3];
+
+      m1.applyAsync(function(row, column, matrix, result) {
+        result.set(row, column, this.get(row, column) + matrix.get(row, column));
+      }, args)
+        .then(function() {
+          expect(args.length).toEqual(2);
+          expect(m3).toEqual(expected);
+          done();
+        });
+    });
+
+    it('performs an operation at each cell of a matrix with chunking', function(done) {
+      var m1 = new Matrix2d(2, 2, [0, 1, 2, 3]);
+      var m2 = new Matrix2d(2, 2, [4, 5, 6, 7]);
+      var expected = new Matrix2d(2, 2, [4, 6, 8, 10]);
+      var m3 = new Matrix2d(2, 2);
+      var args = [m2, m3];
+      var options = {
+        chunk : true,
+        iterations : 1
+      };
+
+      m1.applyAsync(function(row, column, matrix, result) {
+        result.set(row, column, this.get(row, column) + matrix.get(row, column));
+      }, args, options).then(function(numChunks) {
+        expect(options.startRow).not.toBeDefined();
+        expect(options.startColumn).not.toBeDefined();
+        expect(options.numChunks).not.toBeDefined();
+        expect(args.length).toEqual(2);
+        expect(numChunks).toEqual(4);
+        expect(m3).toEqual(expected);
+        done();
+      });
+    });
+  });
+
   describe('add', function() {
     it('throws an error if `matrix` is undefined', function() {
       var matrix = new Matrix2d(2, 2);
@@ -259,28 +319,24 @@ describe('Matrix2d', function() {
       }).toThrowError();
     });
 
-    it('convolves a matrix using a kernel', function(done) {
+    it('convolves a matrix using a kernel', function() {
       var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
       var kernel = new Matrix2d(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
       var expected = new Matrix2d(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
-      matrix.convolve(kernel)
-        .then(function(result) {
-          expect(result.equals(expected)).toBeTruthy();
-          done();
-        });
+      var result = matrix.convolve(kernel);
+      expect(result).toEqual(expected);
     });
 
     it('convolves a matrix using a kernel with chunking', function(done) {
       var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
       var kernel = new Matrix2d(3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]);
       var expected = new Matrix2d(3, 3, [12, 18, 24, 30, 36, 42 ,48, 54, 60]);
-      matrix.convolve(kernel, {
-        chunk : {
-          iterations : 2,
-          duration : 4
-        }
+      matrix.convolveAsync(kernel, {
+        iterations : 2,
+        duration : 4,
+        chunk : true
       }).then(function(result) {
-        expect(result.equals(expected)).toBeTruthy();
+        expect(result).toEqual(expected);
         done();
       });
     });
@@ -297,7 +353,7 @@ describe('Matrix2d', function() {
 
     it('computes the integral of a matrix', function() {
       var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
-      var expected = Matrix2d.fromArrray(3, 3, [0, 1, 3, 3, 8, 15, 9, 21, 36]);
+      var expected = new Matrix2d(3, 3, [0, 1, 3, 3, 8, 15, 9, 21, 36]);
       matrix.integral(matrix);
       expect(matrix.equals(expected)).toBe(true);
     });
