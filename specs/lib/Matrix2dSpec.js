@@ -383,4 +383,20 @@ describe('Matrix2d', function() {
       expect(result.equals(transpose)).toBeTruthy();
     });
   });
+
+  describe('histogram', function() {
+    it('computes the histogram of the matrix data', function() {
+      var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 3, 2, 0, 0]);
+      var histogram = matrix.histogram(5);
+      expect(histogram.min).toEqual(0);
+      expect(histogram.max).toEqual(4);
+      expect(histogram.length).toEqual(5);
+      expect(histogram.binSize).toEqual(1);
+      expect(histogram[0]).toEqual(3);
+      expect(histogram[1]).toEqual(1);
+      expect(histogram[2]).toEqual(2);
+      expect(histogram[3]).toEqual(2);
+      expect(histogram[4]).toEqual(1);
+    });
+  });
 });
