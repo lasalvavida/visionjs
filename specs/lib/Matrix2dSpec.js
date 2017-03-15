@@ -399,4 +399,13 @@ describe('Matrix2d', function() {
       expect(histogram[4]).toEqual(1);
     });
   });
+
+  describe('threshold', function() {
+    it('thresholds a matrix into a boolean mask', function() {
+      var matrix = new Matrix2d(3, 3, [0, 1, 2, 3, 4, 3, 2, 0, 0]);
+      var expected = new Matrix2d(3, 3, [false, false, true, true, true, true, true, false, false]);
+      matrix.threshold(2, matrix);
+      expect(matrix).toEqual(expected);
+    });
+  });
 });
